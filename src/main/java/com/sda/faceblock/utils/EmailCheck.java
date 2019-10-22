@@ -1,4 +1,6 @@
-package com.sda.faceblock;
+package com.sda.faceblock.utils;
+
+import com.sda.faceblock.models.Profile;
 
 import java.util.List;
 

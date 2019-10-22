@@ -1,5 +1,7 @@
-package com.sda.faceblock;
+package com.sda.faceblock.service;
 
+import com.sda.faceblock.models.Profile;
+import com.sda.faceblock.utils.EmailCheck;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
 import org.passay.PasswordGenerator;

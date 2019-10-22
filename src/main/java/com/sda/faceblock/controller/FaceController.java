@@ -1,4 +1,6 @@
-package com.sda.faceblock;
+package com.sda.faceblock.controller;
+import com.sda.faceblock.models.Profile;
+import com.sda.faceblock.service.FaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
