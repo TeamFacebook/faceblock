@@ -7,19 +7,22 @@ import pl.sda.fencebook.post.model.Post;
 import pl.sda.fencebook.post.model.PostRepository;
 import pl.sda.fencebook.user.model.User;
 import pl.sda.fencebook.user.service.UserService;
+import pl.sda.fencebook.utilities.service.EmailService;
 
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class PostService {
-    private UserService userService;
-    private PostRepository repository;
+    private final UserService userService;
+    private final PostRepository repository;
+    private final EmailService emailService;
 
     @Autowired
-    public PostService(UserService userService, PostRepository repository) {
+    public PostService(UserService userService, PostRepository repository, EmailService emailService) {
         this.userService = userService;
         this.repository = repository;
+        this.emailService = emailService;
     }
 
     public void generateNewPost(Integer userId, NewPostRequest request){
@@ -29,6 +32,7 @@ public class PostService {
         post.setTitle(request.getTitle());
         post.setText(request.getText());
         repository.save(post);
+        emailService.sendTestMessage(userService.getUserById(userId).getEmail(), request.getTitle(), request.getText());
     }
 
     public List<Post> getPostsByUserId(Integer id){
