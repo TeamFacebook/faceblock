@@ -2,9 +2,7 @@ package pl.sda.fencebook.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pl.sda.fencebook.user.model.CreateUserRequest;
-import pl.sda.fencebook.user.model.LogInRequest;
-import pl.sda.fencebook.user.model.User;
+import pl.sda.fencebook.user.model.*;
 import pl.sda.fencebook.user.service.UserService;
 
 import java.util.List;
@@ -33,5 +31,15 @@ public class UserController {
     @GetMapping(value = "/login")
     public boolean tryLogIn(@RequestBody LogInRequest request){
         return service.logIn(request);
+    }
+
+    @GetMapping(value = "/getUser")
+    public User getUser(@RequestBody LogInRequest request){
+        return service.retrieveUserProfile(request);
+    }
+
+    @PostMapping(value = "/tenderProfile")
+    public TenderUser getTenderProfile(@RequestBody GetTenderUserByIdRequest request){
+        return service.getTenderUser(request);
     }
 }

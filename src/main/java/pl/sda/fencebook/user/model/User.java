@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.sda.fencebook.post.model.Post;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -24,4 +23,6 @@ public class User {
     @Email
     private String email;
     private String password;
+    @OneToMany(mappedBy = "authorId")
+    private List<Post> posts;
 }
