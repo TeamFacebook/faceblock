@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 import pl.sda.fencebook.user.service.UserService;
 
 @Component
-public class CustomSpringEventListener implements ApplicationListener<ReactionNotificationEvent> {
+public class ReactionNotificationEventListener implements ApplicationListener<ReactionNotificationEvent> {
     private final UserService userService;
 
     @Autowired
-    public CustomSpringEventListener(UserService userService) {
+    public ReactionNotificationEventListener(UserService userService) {
         this.userService = userService;
     }
 

@@ -1,6 +1,7 @@
 package pl.sda.fencebook.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -8,19 +9,26 @@ import pl.sda.fencebook.user.model.CreateUserRequest;
 import pl.sda.fencebook.user.model.*;
 import pl.sda.fencebook.user.model.UserRepository;
 import pl.sda.fencebook.utilities.PasswordGenerator;
+import pl.sda.fencebook.utilities.events.InvitationAcceptedEvent;
+import pl.sda.fencebook.utilities.events.NotificationsReadEvent;
 import pl.sda.fencebook.utilities.service.EmailService;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository repository;
     private final EmailService emailService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public UserService(UserRepository repository, EmailService emailService) {
+    public UserService(UserRepository repository, EmailService emailService, ApplicationEventPublisher eventPublisher) {
         this.repository = repository;
         this.emailService = emailService;
+        this.eventPublisher = eventPublisher;
     }
 
     private static PasswordGenerator gen = new PasswordGenerator();
@@ -103,5 +111,31 @@ public class UserService {
         newFriend.getFriends().add(user);
         repository.save(user);
         repository.save(newFriend);
+        String message = user.getName()+" "+user.getLastname()+" accepted your friend invitation.";
+        publishFriendAcceptedEvent(user.getId(), newFriend.getId(), message);
+    }
+
+    private void publishFriendAcceptedEvent(Integer who, Integer toWhom, String message){
+        InvitationAcceptedEvent event = new InvitationAcceptedEvent(this, who, toWhom, message);
+        eventPublisher.publishEvent(event);
+    }
+
+    public void sendNewNotificationToUser(Integer userId, Notification notification){
+        User user = repository.findById(userId).get();
+        user.getNotifications().add(notification);
+        repository.save(user);
+    }
+
+    public List<Notification> readNotifications(Integer userId){
+        User user = getUserById(userId);
+        List<Notification> notifications = user.getNotifications().stream().collect(Collectors.toList());
+        //Collections.copy(notifications, user.getNotifications());
+        publishNotificationReadEvent(userId);
+        return notifications;
+    }
+
+    private void publishNotificationReadEvent(Integer userId){
+        NotificationsReadEvent event = new NotificationsReadEvent(this, userId);
+        eventPublisher.publishEvent(event);
     }
 }

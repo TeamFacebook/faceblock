@@ -40,21 +40,21 @@ public class PostService {
         repository.save(post);
     }
 
-    public List<Post> getPostsByUserId(Integer id){
+    public List<Post> getUserPosts(Integer id){
         User user = userService.getUserById(id);
         return user.getPosts();
     }
 
-    public void addReactionToPost(Integer postId, Integer reactionId, Integer userId){
-        Post post = repository.findById(postId).get();
+    public void addReactionToPost(AddReactionRequest request){
+        Post post = repository.findById(request.getPostId()).get();
         Reaction reaction = Reaction.LIKE;
         for (Reaction r : Reaction.values()){
-            if(r.ordinal() == reactionId){
+            if(r.ordinal() == request.getReactionId()){
                 reaction=r;
             }
         }
         post.setReaction(reaction);
-        post.setReactionAuthorId(userId);
+        post.setReactionAuthorId(request.getAuthorId());
         repository.save(post);
         publishReactionEvent(post.getReactionAuthorId(), post.getAuthor().getId(), reaction.name());
     }

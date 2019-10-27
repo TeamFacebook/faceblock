@@ -42,4 +42,9 @@ public class UserController {
     public TenderUser getTenderProfile(@RequestBody GetTenderUserByIdRequest request){
         return service.getTenderUser(request);
     }
+
+    @GetMapping(path = "/{id}")
+    public List<Notification> getNotifications(@PathVariable(value = "id") Integer id){
+        return getNotifications(id);
+    }
 }

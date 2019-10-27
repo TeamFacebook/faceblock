@@ -2,12 +2,12 @@ package pl.sda.fencebook.post.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pl.sda.fencebook.post.model.AddReactionRequest;
 import pl.sda.fencebook.post.model.NewPostRequest;
 import pl.sda.fencebook.post.model.Post;
 import pl.sda.fencebook.post.model.RemovePostRequest;
 import pl.sda.fencebook.post.service.PostService;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -31,12 +31,12 @@ public class PostController {
     }
 
     @GetMapping
-    public List<Post> getUserPosts(@RequestParam Integer id){
-        return service.getPostsByUserId(id);
+    public List<Post> getUserPosts(@RequestParam Integer userId){
+        return service.getUserPosts(userId);
     }
 
     @PostMapping(value = "/react")
-    public void addReaction(@RequestParam Integer postId, @RequestParam Integer userId, @RequestParam Integer reactionId){
-        service.addReactionToPost(postId, reactionId, userId);
+    public void addReaction(@RequestBody AddReactionRequest request){
+        service.addReactionToPost(request);
     }
 }

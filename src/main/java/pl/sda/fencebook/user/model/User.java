@@ -33,4 +33,6 @@ public class User {
     private List<User> friends;
     @OneToMany(mappedBy = "invitationReciever")
     private List<Invitation> pendingInvitations;
+    @OneToMany(mappedBy = "userId")
+    private List<Notification> notifications;
 }
