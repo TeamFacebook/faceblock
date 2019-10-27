@@ -3,17 +3,12 @@ package pl.sda.fencebook.post.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import javax.swing.text.StyledEditorKit;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 @AllArgsConstructor
 @Getter
-public class NewPostRequest {
+public class RemovePostRequest {
     @NotNull
-    private Date date;
-    @NotNull
-    private String title, text;
-    @NotNull
-    private Integer authorId;
-
+    private Integer postId;
 }

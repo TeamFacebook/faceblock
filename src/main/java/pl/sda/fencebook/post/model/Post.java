@@ -1,5 +1,6 @@
 package pl.sda.fencebook.post.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,13 @@ public class Post {
     private Date date;
     @NotNull
     private String title, text;
+    private Reaction reaction;
+    private Integer reactionAuthorId;
     @NotNull
-    private Integer authorId;
+    @ManyToOne
+    @JoinColumn(name = "AUTHOR_ID")
+    @JsonIgnore
+    private User author;
+    @NotNull
+    private Boolean isActive = Boolean.TRUE;
 }

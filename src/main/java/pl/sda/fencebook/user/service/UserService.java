@@ -92,4 +92,16 @@ public class UserService {
     public User getUserById(Integer id){
         return repository.findById(id).get();
     }
+
+    public void sendEmailToUser(Integer userId, String subject, String text){
+        String email = repository.findById(userId).get().getEmail();
+        emailService.sendTestMessage(email, subject, text);
+    }
+
+//    public void addFriendForUser(User user, User newFriend){
+//        user.getFriends().add(newFriend);
+//        newFriend.getFriends().add(user);
+//        repository.save(user);
+//        repository.save(newFriend);
+//    }
 }

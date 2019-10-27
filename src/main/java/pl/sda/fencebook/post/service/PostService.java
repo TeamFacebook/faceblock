@@ -1,13 +1,12 @@
 package pl.sda.fencebook.post.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import pl.sda.fencebook.post.model.NewPostRequest;
-import pl.sda.fencebook.post.model.Post;
-import pl.sda.fencebook.post.model.PostRepository;
+import pl.sda.fencebook.post.model.*;
 import pl.sda.fencebook.user.model.User;
 import pl.sda.fencebook.user.service.UserService;
-import pl.sda.fencebook.utilities.service.EmailService;
+import pl.sda.fencebook.utilities.events.ReactionNotificationEvent;
 
 import java.util.Date;
 import java.util.List;
@@ -16,27 +15,52 @@ import java.util.List;
 public class PostService {
     private final UserService userService;
     private final PostRepository repository;
-    private final EmailService emailService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public PostService(UserService userService, PostRepository repository, EmailService emailService) {
+    public PostService(UserService userService, PostRepository repository, ApplicationEventPublisher publisher) {
         this.userService = userService;
         this.repository = repository;
-        this.emailService = emailService;
+        this.eventPublisher = publisher;
     }
 
-    public void generateNewPost(Integer userId, NewPostRequest request){
+    public void generateNewPost(NewPostRequest request){
         Post post = new Post();
-        post.setAuthorId(userId);
+        post.setAuthor(userService.getUserById(request.getAuthorId()));
         post.setDate(new Date());
         post.setTitle(request.getTitle());
         post.setText(request.getText());
         repository.save(post);
-        emailService.sendTestMessage(userService.getUserById(userId).getEmail(), request.getTitle(), request.getText());
+        userService.sendEmailToUser(request.getAuthorId(), request.getTitle(), request.getText());
+    }
+
+    public void removePost(RemovePostRequest request){
+        Post post = repository.findById(request.getPostId()).get();
+        post.setIsActive(Boolean.FALSE);
+        repository.save(post);
     }
 
     public List<Post> getPostsByUserId(Integer id){
         User user = userService.getUserById(id);
         return user.getPosts();
+    }
+
+    public void addReactionToPost(Integer postId, Integer reactionId, Integer userId){
+        Post post = repository.findById(postId).get();
+        Reaction reaction = Reaction.LIKE;
+        for (Reaction r : Reaction.values()){
+            if(r.ordinal() == reactionId){
+                reaction=r;
+            }
+        }
+        post.setReaction(reaction);
+        post.setReactionAuthorId(userId);
+        repository.save(post);
+        publishReactionEvent(post.getReactionAuthorId(), post.getAuthor().getId(), reaction.name());
+    }
+
+    private void publishReactionEvent(Integer who, Integer toWhom, String message){
+        ReactionNotificationEvent event = new ReactionNotificationEvent(this, who, toWhom, message);
+        eventPublisher.publishEvent(event);
     }
 }
