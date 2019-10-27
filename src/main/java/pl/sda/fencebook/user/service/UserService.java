@@ -98,10 +98,10 @@ public class UserService {
         emailService.sendTestMessage(email, subject, text);
     }
 
-//    public void addFriendForUser(User user, User newFriend){
-//        user.getFriends().add(newFriend);
-//        newFriend.getFriends().add(user);
-//        repository.save(user);
-//        repository.save(newFriend);
-//    }
+    public void addFriendForUser(User user, User newFriend){
+        user.getFriends().add(newFriend);
+        newFriend.getFriends().add(user);
+        repository.save(user);
+        repository.save(newFriend);
+    }
 }
